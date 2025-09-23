@@ -1,0 +1,39 @@
+import 'dart:io';
+import 'package:dio/dio.dart';
+import 'package:image_picker/image_picker.dart';
+
+class ImageRepository {
+  final ImagePicker _picker = ImagePicker();
+  final String cloudName = 'dh5rrukew' ?? '';
+  final String uploadPreset = 'anh_hang_hoa' ?? '';
+  final Dio dio = Dio();
+
+  Future<File?> pickImage(ImageSource source) async {
+    try {
+      final pickedFile = await _picker.pickImage(source: source);
+      return pickedFile != null ? File(pickedFile.path) : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<String?> uploadToCloudinary(File imageFile) async {
+    final formData = FormData.fromMap({
+      'upload_preset': uploadPreset,
+      'file': await MultipartFile.fromFile(
+        imageFile.path,
+        filename: imageFile.path.split('/').last,
+      ),
+    });
+    final request = await dio.post(
+      'https://api.cloudinary.com/v1_1/$cloudName/image/upload',
+      data: formData,
+    );
+
+    if (request.statusCode == 200) {
+      return request.data['secure_url'];
+    } else {
+      return null;
+    }
+  }
+}
