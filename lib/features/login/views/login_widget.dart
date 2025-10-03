@@ -37,13 +37,14 @@ Widget formLogin(LoginController controller) {
 Widget _formTextInputTaxCode(LoginController controller) {
   return UtilsWidget.buildInPut(
     TextInputModel(
-      label: FieldEnum.tax_code.lable,
+      label: FieldEnum.tax_code.label,
       hint: FieldEnum.tax_code.hint,
       controller: controller.taxCodeController,
       focusNode: controller.taxCodeFocus,
       keyboardType: FieldEnum.tax_code.keyboardType,
       validator: FieldEnum.tax_code.validate,
       errorText: controller.errorTaxCode.value,
+      useDefaultError: false,
       onChanged: (val) {
         controller.validateField(FieldEnum.tax_code, val);
       },
@@ -54,13 +55,14 @@ Widget _formTextInputTaxCode(LoginController controller) {
 Widget _formTextInputUserName(LoginController controller) {
   return UtilsWidget.buildInPut(
     TextInputModel(
-      label: FieldEnum.user_name.lable,
+      label: FieldEnum.user_name.label,
       hint: FieldEnum.user_name.hint,
       controller: controller.userNameController,
       focusNode: controller.userNameFocus,
       keyboardType: FieldEnum.user_name.keyboardType,
       validator: FieldEnum.user_name.validate,
       errorText: controller.errorUserName.value,
+      useDefaultError: false,
       onChanged: (val) {
         controller.validateField(FieldEnum.user_name, val);
       },
@@ -71,7 +73,7 @@ Widget _formTextInputUserName(LoginController controller) {
 Widget _formTextInputPassWord(LoginController controller) {
   return UtilsWidget.buildInPut(
     TextInputModel(
-      label: FieldEnum.password.lable,
+      label: FieldEnum.password.label,
       hint: FieldEnum.password.hint,
       controller: controller.passwordController,
       focusNode: controller.passwordFocus,
@@ -79,6 +81,7 @@ Widget _formTextInputPassWord(LoginController controller) {
       validator: FieldEnum.password.validate,
       isPassword: true,
       errorText: controller.errorPassword.value,
+      useDefaultError: false,
       onChanged: (val) {
         controller.validateField(FieldEnum.password, val);
       },

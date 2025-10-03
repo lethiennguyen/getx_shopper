@@ -3,19 +3,27 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:getx_curd/core/base/base_controller/base_controller.dart';
-import 'package:getx_curd/core/base/base_reponse/base_response_data.dart';
+import 'package:getx_curd/core/base/base_reponse/product_response_data.dart';
 import 'package:getx_curd/core/base/base_request/product_request.dart';
 import 'package:getx_curd/features/detail_product/repository/detail_and_update_product_repository.dart';
+import 'package:getx_curd/features/image_picker_load/repository/image_picker_repository.dart';
+import 'package:getx_curd/features/image_picker_load/request/image_upload_request.dart';
 import 'package:getx_curd/utils/show_popup.dart';
 import 'package:getx_curd/utils/utils_widget.dart';
-import 'package:intl/intl.dart';
+import 'package:hive/hive.dart';
+import 'package:image_picker/image_picker.dart';
 
+import '../../../core/values/key.dart';
 import '../../../core/values/strings.dart';
+import '../../shopping_cart/model/hive_shopping_cart.dart';
 
 class DetailAndUpdateProductController extends BaseGetxController {
-  final currencyFormatter = NumberFormat('#,##0', 'vi_VN');
   late final DetailAndUpdateProductRepository
   _detailAndUpdateProductRepository = DetailAndUpdateProductRepository(this);
+
+  late final ImageRepository _repositoryImage = ImageRepository(this);
+
+  final ImageUploadRequest _requestImage = ImageUploadRequest();
   final product = Rx<ProductData?>(null);
   late final ProductRequest _productRequest = ProductRequest();
   final TextEditingController nameController = TextEditingController();
@@ -29,11 +37,20 @@ class DetailAndUpdateProductController extends BaseGetxController {
 
   final RxString url = ''.obs;
 
+  late final Box<CartItem> box;
+  final RxList<CartItem> items = <CartItem>[].obs;
+  final RxInt cartCount = 0.obs;
   @override
   void onInit() {
     super.onInit();
     final int productId = Get.arguments as int;
     fetchProductDetail(productId);
+    box = Hive.box<CartItem>(HiveBoxNames.cartbox);
+    shoppingCartCount();
+  }
+
+  void shoppingCartCount() {
+    cartCount.value = box.length;
   }
 
   Future<void> fetchProductDetail(int productId) async {
@@ -48,11 +65,18 @@ class DetailAndUpdateProductController extends BaseGetxController {
       quantityController.text = result.data!.quantity!.toString();
       coverController.text = result.data!.cover!;
     }
-    print('${priceController.text}');
   }
 
-  void loadImage() async {
-    url.value = coverController.text;
+  Future<void> upImage() async {
+    final upImage = await _repositoryImage.pickImage(ImageSource.gallery);
+    if (upImage == null) return;
+    _requestImage
+      ..imagePath = upImage.path
+      ..uploadPreset = _repositoryImage.uploadPreset;
+
+    final urlImage = await _repositoryImage.uploadToCloudinary(_requestImage);
+    if (urlImage == null) return;
+    url.value = urlImage;
   }
 
   Future<void> updateProduct(
@@ -92,9 +116,9 @@ class DetailAndUpdateProductController extends BaseGetxController {
     return;
   }
 
-  Future<bool> deleteProduct(int productID) async {
+  Future<void> deleteProduct(int productID) async {
     final isDelete = await showDiaLog();
-    if (isDelete == true) {
+    if (isDelete) {
       final result = await _detailAndUpdateProductRepository.deleteProduct(
         productID,
       );
@@ -105,18 +129,16 @@ class DetailAndUpdateProductController extends BaseGetxController {
           AppStrings.okButton,
           null,
         );
-        return false;
       }
-      if (result?.success == true) {
+      if (result!.success) {
+        removeById(productID);
         Get.back(result: true);
         UtilsWidget.showSnackBar(
           title: AppStrings.title,
-          message: AppStrings.messageUpdate,
+          message: AppStrings.messageNotiDelete,
         );
-        return true;
       }
     }
-    return false;
   }
 
   Future<bool> showDiaLog() async {
@@ -132,5 +154,45 @@ class DetailAndUpdateProductController extends BaseGetxController {
       },
     );
     return completer.future;
+  }
+
+  int? findKeyByProductId(int productId) {
+    final key = box.keys.firstWhere((k) => box.get(k)!.id == productId);
+    if (key != null) {
+      return key;
+    } else {
+      return null;
+    }
+  }
+
+  /// xóa theo id
+  Future<void> removeById(int id) async {
+    final key = findKeyByProductId(id);
+    if (key == null) return;
+
+    // Xóa trong Hive (theo key trong box)
+    await box.delete(key);
+  }
+
+  Future<void> addItem(CartItem item) async {
+    // Kiểm tra trong box chứ không chỉ trong items
+    final exists = box.values.any((e) => e.id == item.id);
+    print("${item.id}");
+    if (exists) {
+      UtilsWidget.showSnackBar(
+        title: AppStrings.title,
+        message: AppStrings.messageAddItemFail,
+      );
+      return;
+    }
+
+    await box.add(item);
+    items.add(item);
+    shoppingCartCount();
+
+    UtilsWidget.showSnackBar(
+      title: AppStrings.title,
+      message: AppStrings.messageAddItem,
+    );
   }
 }

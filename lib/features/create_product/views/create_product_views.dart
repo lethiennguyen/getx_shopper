@@ -11,10 +11,12 @@ Widget _buildBody(CreateProductController controller) {
           child: Column(
             children: [
               _imageProduct(controller),
+              SizedBoxCustom.h8,
               _formTextInputName(controller),
+              SizedBoxCustom.h8,
               _formTextInputPrice(controller),
+              SizedBoxCustom.h8,
               _formTextInputQuantity(controller),
-              _formTextInputCover(controller),
             ],
           ),
         ),
@@ -24,20 +26,51 @@ Widget _buildBody(CreateProductController controller) {
 }
 
 Widget _imageProduct(CreateProductController controller) {
-  return Container(
-    padding: EdgeInsets.all(6),
-    decoration: BoxDecoration(
-      color: AppColors.colorWhite,
-      border: Border.all(color: AppColors.colorWhiteGray, width: 1),
-    ),
-    height: Get.height * 0.2,
-    child: Obx(
-      () => ClipRRect(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
-        child: controller.url.value.isEmpty
-            ? Image.asset(IconsAssets.noImage, fit: BoxFit.contain)
-            : Image.network(controller.url.value, fit: BoxFit.contain),
-      ),
+  return Center(
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            TextUtils(
+              text: FieldEnum.cover.label ?? '',
+              size: AppDimens.sizeTextMedium,
+              availableStyle: StyleEnum.MbTitle1Bold,
+            ),
+            TextUtils(
+              text: ' *',
+              color: AppColors.colorRed,
+              availableStyle: StyleEnum.MbTitle1Bold,
+            ),
+          ],
+        ),
+        SizedBoxCustom.h8,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Obx(
+              () => controller.url.value.isNotEmpty
+                  ? ImagePickerWidget(imageUrl: controller.url.value)
+                  : Image.asset(
+                      IconsAssets.noImage,
+                      fit: BoxFit.contain,
+                      height: 150,
+                      width: 150,
+                    ),
+            ),
+            SizedBoxCustom.w16,
+            UtilsWidget.buildButton(
+              textColor: AppColors.colorWhite,
+              height: 54,
+              width: 80,
+              text: AppStrings.load,
+              onPressed: () {
+                controller.upImage();
+              },
+            ),
+          ],
+        ),
+      ],
     ),
   );
 }
@@ -45,17 +78,15 @@ Widget _imageProduct(CreateProductController controller) {
 Widget _formTextInputName(CreateProductController controller) {
   return UtilsWidget.buildInPut(
     TextInputModel(
-      icon: Icon(
-        Icons.drive_file_rename_outline_sharp,
-        color: AppColors.colorOrange,
-      ),
-      label: FieldEnum.name.lable,
+      icon: Icon(Icons.drive_file_rename_outline_sharp, color: colorIcon()),
+      label: FieldEnum.name.label,
       hint: FieldEnum.name.hint,
       controller: controller.nameController,
       focusNode: controller.nameFocus,
       keyboardType: FieldEnum.name.keyboardType,
       validator: FieldEnum.name.validate,
       useDefaultError: true,
+      isDataEntryRequire: true,
     ),
   );
 }
@@ -63,14 +94,15 @@ Widget _formTextInputName(CreateProductController controller) {
 Widget _formTextInputPrice(CreateProductController controller) {
   return UtilsWidget.buildInPut(
     TextInputModel(
-      icon: Icon(Icons.monetization_on, color: AppColors.colorOrange),
-      label: FieldEnum.price.lable,
+      icon: Icon(Icons.monetization_on, color: colorIcon()),
+      label: FieldEnum.price.label,
       hint: FieldEnum.price.hint,
       controller: controller.priceController,
       focusNode: controller.priceFocus,
       keyboardType: FieldEnum.price.keyboardType,
       validator: FieldEnum.price.validate,
       useDefaultError: true,
+      isDataEntryRequire: true,
     ),
   );
 }
@@ -78,14 +110,15 @@ Widget _formTextInputPrice(CreateProductController controller) {
 Widget _formTextInputQuantity(CreateProductController controller) {
   return UtilsWidget.buildInPut(
     TextInputModel(
-      icon: Icon(Icons.warehouse, color: AppColors.colorOrange),
-      label: FieldEnum.quantity.lable,
+      icon: Icon(Icons.warehouse, color: colorIcon()),
+      label: FieldEnum.quantity.label,
       hint: FieldEnum.quantity.hint,
       controller: controller.quantityController,
       focusNode: controller.quantityFocus,
       keyboardType: FieldEnum.quantity.keyboardType,
       validator: FieldEnum.quantity.validate,
       useDefaultError: true,
+      isDataEntryRequire: true,
     ),
   );
 }
@@ -100,32 +133,6 @@ Widget _buttonBack(CreateProductController controller) {
   ).paddingOnly(bottom: AppDimens.padding30);
 }
 
-Widget _formTextInputCover(CreateProductController controller) {
-  return Row(
-    children: [
-      Expanded(
-        child: UtilsWidget.buildInPut(
-          TextInputModel(
-            label: FieldEnum.cover.lable,
-            hint: FieldEnum.cover.hint,
-            icon: Icon(Icons.image, color: AppColors.colorOrange),
-            controller: controller.coverController,
-            focusNode: controller.coverFocus,
-            keyboardType: FieldEnum.cover.keyboardType,
-            validator: FieldEnum.cover.validate,
-            useDefaultError: true,
-          ),
-        ),
-      ),
-      SizedBoxCustom.w16,
-      UtilsWidget.buildButton(
-        width: 70,
-        height: 54,
-        text: AppStrings.load,
-        onPressed: () {
-          controller.loadImage();
-        },
-      ),
-    ],
-  );
+Color colorIcon() {
+  return AppColors.colorOrange;
 }

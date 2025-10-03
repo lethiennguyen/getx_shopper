@@ -36,30 +36,30 @@ Widget _buildBottomNavigationBar(HomeController controller) {
           ),
         ),
       ),
-      Positioned(
-        top: 10,
-        child: GestureDetector(
-          onTap: () {
-            Get.toNamed(AppRouter.routerCreat_product);
-          },
-          child: Container(
-            width: 55,
-            height: 55,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: AppColors.colorOrange,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black26,
-                  blurRadius: 8,
-                  offset: Offset(0, 2),
-                ),
-              ],
-            ),
-            child: const Icon(Icons.add, color: Colors.white),
-          ),
-        ),
-      ),
+      // Positioned(
+      //   top: 10,
+      //   child: GestureDetector(
+      //     onTap: () {
+      //       Get.toNamed(AppRouter.routerCreat_product);
+      //     },
+      //     child: Container(
+      //       width: 55,
+      //       height: 55,
+      //       decoration: BoxDecoration(
+      //         shape: BoxShape.circle,
+      //         color: AppColors.colorOrange,
+      //         boxShadow: [
+      //           BoxShadow(
+      //             color: Colors.black26,
+      //             blurRadius: 8,
+      //             offset: Offset(0, 2),
+      //           ),
+      //         ],
+      //       ),
+      //       child: const Icon(Icons.add, color: Colors.white),
+      //     ),
+      //   ),
+      // ),
     ],
   );
 }

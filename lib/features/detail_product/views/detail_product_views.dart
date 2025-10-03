@@ -1,21 +1,26 @@
 part of 'detail_product_page.dart';
 
-PreferredSizeWidget _appBar() {
+PreferredSizeWidget _appBar(DetailAndUpdateProductController controller) {
   return AppBar(
     backgroundColor: AppColors.colorWhite,
     leading: IconButton(
       onPressed: () {
-        Get.back();
+        Get.back(result: true);
       },
       icon: Icon(Icons.arrow_back),
     ),
     actions: [
-      UtilsWidget.buildIconShoppingCart(
-        onPressed: () {
-          HapticFeedback.lightImpact();
-          // controller.onTapShoppingCart();
-        },
-        numberItem: '12',
+      Obx(
+        () => UtilsWidget.buildIconShoppingCart(
+          onPressed: () async {
+            HapticFeedback.lightImpact();
+            final result = await Get.toNamed(AppRouter.routerShopping_cart);
+            if (result == true) {
+              controller.shoppingCartCount();
+            }
+          },
+          numberItem: controller.cartCount.toString(),
+        ),
       ),
     ],
     bottom: PreferredSize(
@@ -59,8 +64,17 @@ Widget _buildImage(DetailAndUpdateProductController controller) {
     child: ClipRRect(
       borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
       child: (cover == null || cover.isEmpty)
-          ? Image.asset(IconsAssets.noImage, fit: BoxFit.contain)
-          : Image.network(cover, fit: BoxFit.contain),
+          ? Center(
+              child: SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: AppColors.colorBlack,
+                ),
+              ),
+            )
+          : Image.network(cover ?? IconsAssets.ImageUrl, fit: BoxFit.contain),
     ),
   );
 }
@@ -81,8 +95,7 @@ Widget _buildPriceProduct(DetailAndUpdateProductController controller) {
   return Padding(
     padding: const EdgeInsets.only(left: 16, top: 16),
     child: TextUtils(
-      text:
-          '${controller.currencyFormatter.format(controller.product.value?.price ?? 0)}đ',
+      text: CurrencyUtils.formatPrice(controller.product.value?.price ?? 0),
       size: AppDimens.sizeTextLarge,
       fontWeight: FontWeight.w800,
       color: AppColors.colorOrange,
@@ -158,7 +171,20 @@ Widget _buttonCartShopping(DetailAndUpdateProductController controller) {
       isIconText: true,
       asset: IconsAssets.shopping_cart_bag,
       border: Border.all(color: AppColors.colorGray, width: 1),
-      onPressed: () {},
+      onPressed: () {
+        final product = controller.product.value;
+        if (product?.id != null) {
+          final item = CartItem(
+            id: product!.id!,
+            name: product.name ?? '',
+            price: product.price ?? 0,
+            quantity: 1,
+            cover: product.cover ?? IconsAssets.noImage,
+            checked: false,
+          );
+          controller.addItem(item);
+        }
+      },
     ),
   );
 }

@@ -2,11 +2,11 @@ part of 'list_product_page.dart';
 
 Widget _buildListProduct(ListProductController controller) {
   return Obx(() {
-    // if (controller.isShowLoading.value) {
-    //   return _buildSkeletonListProduct();
-    // }
+    if (controller.isShowLoading.value) {
+      return _buildSkeletonListProduct();
+    }
     if (controller.listProduct.isEmpty) {
-      return _noData(controller);
+      return _noData(controller.onRefresh);
     }
     return UtilsWidget.buildSmartRefresher(
       refreshController: controller.refreshController,
@@ -35,7 +35,7 @@ Widget _buildItemProduct(ListProductController controller) {
   );
 }
 
-Widget _noData(ListProductController controller) {
+Widget _noData(VoidCallback func) {
   return Center(
     child: Padding(
       padding: const EdgeInsets.only(top: 50),
@@ -52,7 +52,7 @@ Widget _noData(ListProductController controller) {
           SizedBoxCustom.h16,
           ElevatedButton(
             onPressed: () {
-              controller.onRefresh();
+              func.call();
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.colorOrange,
@@ -83,7 +83,7 @@ Widget _buildSkeletonListProduct() {
       ),
       itemCount: 6,
       itemBuilder: (context, index) {
-        return _buildProductSkeleton();
+        return ProductSkeleton();
       },
     ),
   );
@@ -116,7 +116,7 @@ Widget _productItem(ProductData product, ListProductController controller) {
               AppRouter.routerProduct_detail,
               arguments: product.id,
             );
-            if (result == true) {
+            if (result) {
               controller.onRefresh();
             }
           },
@@ -163,13 +163,28 @@ Widget _productItem(ProductData product, ListProductController controller) {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             TextUtils(
-                              text: controller.formatPrice(product.price ?? 0),
+                              text: CurrencyUtils.formatPriceDigits(
+                                product.price ?? 0,
+                              ),
                               size: AppDimens.sizeText13,
                               fontWeight: FontWeight.w900,
                               color: AppColors.colorOrange,
                             ),
                             GestureDetector(
-                              onTap: () {},
+                              onTap: () {
+                                final id = product.id;
+                                if (product.id != null) {
+                                  final item = CartItem(
+                                    id: id!,
+                                    name: product.name!,
+                                    price: product.price!,
+                                    quantity: 1,
+                                    cover: product.cover!,
+                                    checked: false,
+                                  );
+                                  controller.addItem(item);
+                                }
+                              },
                               child: Container(
                                 padding: EdgeInsets.all(8),
                                 decoration: BoxDecoration(
@@ -198,102 +213,7 @@ Widget _productItem(ProductData product, ListProductController controller) {
   );
 }
 
-Widget _buildProductSkeleton() {
-  return Padding(
-    padding: const EdgeInsets.all(4),
-    child: Material(
-      color: Colors.white,
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Color(0xffEBEBEB)),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Container(
-              height: 160,
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(color: Color(0xffEBEBEB), width: 1),
-                ),
-              ),
-              child: Skeletonizer(
-                enabled: true,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(15),
-                  child: Container(
-                    color: Colors.grey[300],
-                    width: double.infinity,
-                    height: double.infinity,
-                  ),
-                ),
-              ),
-            ),
-            Flexible(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    SizedBoxCustom.h8,
-                    Skeletonizer(
-                      enabled: true,
-                      child: Container(
-                        height: 16,
-                        width: double.infinity,
-                        color: Colors.grey[300],
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        bottom: 16,
-                        top: 8,
-                        right: 8,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Skeletonizer(
-                            enabled: true,
-                            child: Container(
-                              height: 14,
-                              width: 60,
-                              color: Colors.grey[300],
-                            ),
-                          ),
-                          Skeletonizer(
-                            enabled: true,
-                            child: Container(
-                              padding: EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: Colors.grey[300],
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(
-                                Icons.add,
-                                size: 15,
-                                color: Colors.transparent,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    ),
-  );
-}
-
-PreferredSizeWidget _appBar() {
+PreferredSizeWidget _appBar(ListProductController controller) {
   return AppBar(
     title: SvgPicture.asset(IconsAssets.logo, width: 158, height: 37),
     backgroundColor: AppColors.colorWhite,
@@ -303,11 +223,19 @@ PreferredSizeWidget _appBar() {
         margin: EdgeInsets.only(right: 16),
         child: Stack(
           children: [
-            UtilsWidget.buildIconShoppingCart(
-              onPressed: () {
-                HapticFeedback.lightImpact();
-              },
-              numberItem: '12',
+            Obx(
+              () => UtilsWidget.buildIconShoppingCart(
+                onPressed: () async {
+                  HapticFeedback.lightImpact();
+                  final result = await Get.toNamed(
+                    AppRouter.routerShopping_cart,
+                  );
+                  if (result == true) {
+                    controller.shoppingCartCount();
+                  }
+                },
+                numberItem: controller.cartCount.toString(),
+              ),
             ),
           ],
         ),
@@ -317,5 +245,18 @@ PreferredSizeWidget _appBar() {
       preferredSize: Size.fromHeight(1),
       child: Container(color: AppColors.colorWhiteGray, height: 1),
     ),
+  );
+}
+
+Widget _buildFloatingActionButton(VoidCallback func) {
+  return FloatingActionButton(
+    backgroundColor: AppColors.colorOrange,
+    child: Icon(Icons.add, color: Colors.white),
+    onPressed: () async {
+      final result = await Get.toNamed(AppRouter.routerCreat_product);
+      if (result == true) {
+        func.call();
+      }
+    },
   );
 }

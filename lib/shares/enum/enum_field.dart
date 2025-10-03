@@ -1,89 +1,87 @@
 import 'package:flutter/cupertino.dart';
+import 'package:getx_curd/core/values/strings.dart';
 
 enum FieldEnum { name, price, quantity, cover, tax_code, user_name, password }
 
 extension ProductFieldExtentsion on FieldEnum {
+  String? get hint {
+    switch (this) {
+      case FieldEnum.name:
+        return AppStrings.name;
+      case FieldEnum.price:
+        return AppStrings.price;
+      case FieldEnum.quantity:
+        return AppStrings.quantity;
+      case FieldEnum.cover:
+        return null;
+      case FieldEnum.tax_code:
+        return AppStrings.taxCode;
+      case FieldEnum.user_name:
+        return AppStrings.userName;
+      case FieldEnum.password:
+        return AppStrings.password;
+    }
+  }
+
   String? validate(String? value) {
     switch (this) {
       case FieldEnum.cover:
-        if (value == null || value.isEmpty) {
-          return "Ảnh sản phẩm không được để trống";
-        }
         return null;
       case FieldEnum.price:
         value = (value ?? '').trim();
-        if (value.isEmpty) return "Giá không được để trống";
+        if (value.isEmpty) return AppStrings.priceValidate;
         if (int.tryParse(value) == null || int.parse(value) <= 0) {
-          return "Giá phải là số dương";
+          return AppStrings.price_validate_positive_number;
         }
         return null;
       case FieldEnum.quantity:
         if (value == null || value.isEmpty) {
-          return "Số lượng không được để trống";
+          return AppStrings.quantityValidate;
         }
         if (int.tryParse(value) == null || int.parse(value) <= 0) {
-          return "Số lượng phải là số dương";
+          return AppStrings.quantity_validate_positive_number;
         }
         return null;
       case FieldEnum.name:
         value = (value ?? '').trim();
         if (value.isEmpty) {
-          return "Tên sản phẩm không được để trống";
+          return AppStrings.nameValidate;
         }
       case FieldEnum.tax_code:
         value = (value ?? '').trim();
-        if (value.length != 10) return "Mã số thuế phải đúng 10 ký tự";
+        if (value.length != 10) return AppStrings.taxCodeValidate;
         return null;
       case FieldEnum.user_name:
         if ((value ?? '').trim().isEmpty) {
-          return "Tài khoản không được để trống";
+          return AppStrings.userNameValidate;
         }
         return null;
       case FieldEnum.password:
         value = (value ?? '').trim();
         if (value.length < 6 || value.length > 50) {
-          return "Mật khẩu từ 6 đến 50 ký tự";
+          return AppStrings.passwordValidate;
         }
         return null;
     }
     return null;
   }
 
-  String get lable {
+  String? get label {
     switch (this) {
       case FieldEnum.cover:
-        return "Ảnh sản phẩm";
+        return AppStrings.coverLabel;
       case FieldEnum.name:
-        return "Tên sản phẩm";
+        return AppStrings.nameLabel;
       case FieldEnum.price:
-        return "Giá";
+        return AppStrings.priceLabel;
       case FieldEnum.quantity:
-        return "Số lượng tồn kho";
+        return AppStrings.quantityLabel;
       case FieldEnum.tax_code:
-        return "Mã số thuế";
+        return AppStrings.taxCodeLabel;
       case FieldEnum.user_name:
-        return "Tài khoản";
+        return AppStrings.userNameLabel;
       case FieldEnum.password:
-        return "Mật khẩu";
-    }
-  }
-
-  String get hint {
-    switch (this) {
-      case FieldEnum.name:
-        return "Tên sản phẩm";
-      case FieldEnum.price:
-        return "Giá";
-      case FieldEnum.quantity:
-        return "Số lượng tồn kho";
-      case FieldEnum.cover:
-        return "Chọn ảnh sản phẩm";
-      case FieldEnum.tax_code:
-        return "000012";
-      case FieldEnum.user_name:
-        return "Tài khoản";
-      case FieldEnum.password:
-        return "Mật khẩu";
+        return AppStrings.passwordLabel;
     }
   }
 

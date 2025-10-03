@@ -7,10 +7,10 @@ class ProductRequest {
   ProductRequest({this.name, this.price, this.quantity, this.cover});
   factory ProductRequest.fromJson(Map<String, dynamic> json) {
     return ProductRequest(
-      name: json['name'],
-      price: json['price'],
-      quantity: json['quantity'],
-      cover: json['cover'],
+      name: json['name'] ?? '',
+      price: json['price'] ?? '',
+      quantity: json['quantity'] ?? '',
+      cover: json['cover'] ?? '',
     );
   }
   Map<String, dynamic> toJson() {

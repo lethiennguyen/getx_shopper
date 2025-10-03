@@ -1,39 +1,33 @@
 import 'dart:io';
-import 'package:dio/dio.dart';
+import 'package:getx_curd/core/base/base_repository/base_connect_api.dart';
+import 'package:getx_curd/core/base/base_repository/base_repository.dart';
+import 'package:getx_curd/core/values/api_url.dart';
+import 'package:getx_curd/features/image_picker_load/request/image_upload_request.dart';
 import 'package:image_picker/image_picker.dart';
 
-class ImageRepository {
+class ImageRepository extends BaseRepository {
   final ImagePicker _picker = ImagePicker();
-  final String cloudName = 'dh5rrukew' ?? '';
-  final String uploadPreset = 'anh_hang_hoa' ?? '';
-  final Dio dio = Dio();
+  final String uploadPreset = 'anh_hang_hoa';
+  ImageRepository(super.controller);
 
   Future<File?> pickImage(ImageSource source) async {
-    try {
-      final pickedFile = await _picker.pickImage(source: source);
-      return pickedFile != null ? File(pickedFile.path) : null;
-    } catch (e) {
-      return null;
+    final pickedFile = await _picker.pickImage(source: source);
+    if (pickedFile != null) {
+      return File(pickedFile.path);
     }
+    return null;
   }
 
-  Future<String?> uploadToCloudinary(File imageFile) async {
-    final formData = FormData.fromMap({
-      'upload_preset': uploadPreset,
-      'file': await MultipartFile.fromFile(
-        imageFile.path,
-        filename: imageFile.path.split('/').last,
-      ),
-    });
-    final request = await dio.post(
-      'https://api.cloudinary.com/v1_1/$cloudName/image/upload',
-      data: formData,
+  Future<String?> uploadToCloudinary(ImageUploadRequest requestImage) async {
+    final res = await baseSendRequest(
+      '',
+      RequestMethod.POST,
+      urlOther: ApiUrl.urlImagePicker,
+      jsonMap: await requestImage.toFormData(),
     );
-
-    if (request.statusCode == 200) {
-      return request.data['secure_url'];
-    } else {
+    if (res == null) {
       return null;
     }
+    return res['secure_url'];
   }
 }

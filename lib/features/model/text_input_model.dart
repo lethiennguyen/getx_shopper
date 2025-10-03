@@ -11,6 +11,7 @@ class TextInputModel {
   Icon? icon;
   bool isPassword;
   bool isShowIcon;
+  bool isDataEntryRequire;
   final bool useDefaultError;
   String? errorText;
   ValueChanged<String>? onChanged;
@@ -25,6 +26,7 @@ class TextInputModel {
     this.icon,
     this.isPassword = false,
     this.isShowIcon = true,
+    this.isDataEntryRequire = false,
     this.useDefaultError = true,
     this.errorText = '',
     this.onChanged,

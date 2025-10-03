@@ -1,13 +1,12 @@
-import 'dart:io';
-
-import 'package:cloudinary_url_gen/transformation/resize/fit.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:getx_curd/core/values/colors.dart';
+import 'package:getx_curd/features/model/app_bar_model.dart';
 import 'package:getx_curd/features/model/shopping_cart_operation_model.dart';
 import 'package:getx_curd/features/model/text_input_model.dart';
+import 'package:getx_curd/utils/currency_utils.dart';
 import 'package:getx_curd/utils/utils_text.dart';
 import 'package:getx_curd/utils/widgets/size_box.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -45,11 +44,21 @@ class UtilsWidget {
       () => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          TextUtils(
-            text: textInputModel.label ?? '',
-            color: AppColors.colorGray3,
-            fontWeight: FontWeight.w700,
-            size: AppDimens.sizeTextMediumTb,
+          Row(
+            children: [
+              TextUtils(
+                text: textInputModel.label ?? '',
+                color: AppColors.colorGray3,
+                availableStyle: StyleEnum.MbTitle1Bold,
+              ),
+              ?textInputModel.isDataEntryRequire
+                  ? TextUtils(
+                      text: ' *',
+                      color: AppColors.colorRed,
+                      availableStyle: StyleEnum.MbTitle1Bold,
+                    )
+                  : null,
+            ],
           ),
           TextFormField(
             controller: textInputModel.controller,
@@ -58,6 +67,8 @@ class UtilsWidget {
             validator: textInputModel.validator,
             autovalidateMode: AutovalidateMode.onUserInteraction,
             obscureText: isObscure.value.obs.value,
+            textInputAction: TextInputAction.next,
+            onFieldSubmitted: (_) {},
             onChanged: (val) {
               inputText.value = val;
               textInputModel.onChanged?.call(val);
@@ -76,8 +87,6 @@ class UtilsWidget {
                         ? GestureDetector(
                             onTap: () {
                               isObscure.value = !isObscure.value;
-                              print("isObscure: ${isObscure}");
-                              print("pass: ${textInputModel.isPassword}");
                             },
                             child: Padding(
                               padding: const EdgeInsets.all(10),
@@ -307,28 +316,37 @@ class UtilsWidget {
     );
   }
 
-  static Widget formDetailProduct(
-    ShoppingCartOperationModel shoppingCartModel,
-  ) {
+  static Widget formProductItem(ShoppingCartOperationModel shoppingCartModel) {
     return Row(
       children: [
-        Container(
-          padding: EdgeInsets.all(6),
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.black26, width: 1),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Image.network(
-              shoppingCartModel.cover,
-              width: 80,
-              height: 70,
-              fit: BoxFit.cover,
+        SizedBoxCustom.w8,
+        Checkbox(
+          value: shoppingCartModel.isCheckBox ?? false,
+          onChanged: shoppingCartModel.onChange,
+          activeColor: AppColors.colorOrange,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+        ),
+        Expanded(
+          flex: 1,
+          child: Container(
+            padding: EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.black26, width: 1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.network(
+                shoppingCartModel.cover ?? '',
+                width: 80,
+                height: 70,
+                fit: BoxFit.contain,
+              ),
             ),
           ),
         ),
         Expanded(
+          flex: 1,
           child: Container(
             padding: EdgeInsets.fromLTRB(10, 16, 0, 16),
             child: Column(
@@ -336,62 +354,115 @@ class UtilsWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 TextUtils(
-                  text: shoppingCartModel.name,
+                  text: shoppingCartModel.name ?? '',
                   size: AppDimens.sizeTextSmall,
                   color: AppColors.colorGray,
                   fontWeight: FontWeight.w600,
                 ),
                 SizedBoxCustom.h8,
-                Row(
-                  children: [
-                    TextUtils(
-                      text: shoppingCartModel.price,
-                      size: AppDimens.sizeTextSmall,
-                      color: AppColors.colorOrange,
-                      fontWeight: FontWeight.w600,
+                TextUtils(
+                  text: CurrencyUtils.formatPriceDigits(
+                    shoppingCartModel.price ?? 0,
+                  ).toString(),
+                  size: AppDimens.sizeTextSmall,
+                  color: AppColors.colorOrange,
+                  fontWeight: FontWeight.w600,
+                ),
+                SizedBoxCustom.h8,
+                TextUtils(
+                  text: CurrencyUtils.formatPriceDigits(
+                    shoppingCartModel.totalPrice ?? 0,
+                  ).toString(),
+                  size: AppDimens.sizeTextMediumTb,
+                  color: AppColors.colorOrange,
+                  fontWeight: FontWeight.w600,
+                ),
+              ],
+            ),
+          ),
+        ),
+        Expanded(
+          flex: 1,
+          child: Padding(
+            padding: EdgeInsets.only(bottom: AppDimens.padding16),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Container(
+                  height: 25,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: AppColors.colorGray.withOpacity(0.3),
+                      width: 1,
                     ),
-                    Container(
-                      height: 25,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: AppColors.colorGray.withOpacity(0.3),
-                          width: 1,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _buttonIcon(shoppingCartModel.onReduce, Icons.remove),
+                      // Container(
+                      //   width: 25,
+                      //   height: 20,
+                      //   decoration: BoxDecoration(
+                      //     border: Border(
+                      //       left: BorderSide(
+                      //         color: AppColors.colorGray,
+                      //         width: 1,
+                      //       ),
+                      //       right: BorderSide(
+                      //         color: AppColors.colorGray,
+                      //         width: 1,
+                      //       ),
+                      //     ),
+                      //   ),
+                      //   child: Center(
+                      //     child: TextUtils(
+                      //       text: (shoppingCartModel.quantity ?? 0).toString(),
+                      //       size: AppDimens.sizeTextMediumTb,
+                      //       fontWeight: FontWeight.w700,
+                      //       color: AppColors.colorGray,
+                      //     ),
+                      //   ),
+                      // ),
+                      Container(
+                        width: 40,
+                        height: 28,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: AppColors.colorGray,
+                            width: 1,
+                          ),
+                        ),
+                        child: Center(
+                          child: TextField(
+                            controller: TextEditingController(
+                              text: (shoppingCartModel.quantity ?? 0)
+                                  .toString(),
+                            ),
+                            keyboardType: TextInputType.number,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: AppDimens.sizeTextMediumTb,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.colorGray,
+                            ),
+                            decoration: const InputDecoration(
+                              border: InputBorder.none,
+                              isDense: true, // giảm padding
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                            onSubmitted: (value) {
+                              final qty = int.tryParse(value) ?? 1;
+                              shoppingCartModel.quantity = qty;
+                              // gọi controller.update hoặc cart.sum() nếu cần tính lại
+                            },
+                          ),
                         ),
                       ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          _buttonIcon(shoppingCartModel.onReduce),
-                          Container(
-                            width: 25,
-                            height: 20,
-                            decoration: BoxDecoration(
-                              border: Border(
-                                left: BorderSide(
-                                  color: AppColors.colorGray,
-                                  width: 1,
-                                ),
-                                right: BorderSide(
-                                  color: AppColors.colorGray,
-                                  width: 1,
-                                ),
-                              ),
-                            ),
-                            child: Center(
-                              child: TextUtils(
-                                text: shoppingCartModel.quantity,
-                                size: AppDimens.sizeTextMediumTb,
-                                fontWeight: FontWeight.w700,
-                                color: AppColors.colorGray,
-                              ),
-                            ),
-                          ),
-                          _buttonIcon(shoppingCartModel.onIncrease),
-                        ],
-                      ),
-                    ),
-                  ],
+                      _buttonIcon(shoppingCartModel.onIncrease, Icons.add),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -401,11 +472,13 @@ class UtilsWidget {
     );
   }
 
-  static Widget _buttonIcon(VoidCallback? onClick) {
-    return GestureDetector(
-      onTap: () {
-        onClick;
-      },
+  static Widget _buttonIcon(VoidCallback? onClick, IconData icon) {
+    return InkWell(
+      borderRadius: const BorderRadius.only(
+        topRight: Radius.circular(8),
+        bottomRight: Radius.circular(8),
+      ),
+      onTap: onClick,
       child: Container(
         width: 20,
         height: 20,
@@ -416,7 +489,46 @@ class UtilsWidget {
           ),
           color: Colors.transparent,
         ),
-        child: Icon(Icons.add, size: 18, color: AppColors.colorGray),
+        child: Icon(icon, size: 18, color: AppColors.colorGray),
+      ),
+    );
+  }
+
+  static PreferredSizeWidget buildAppBar(AppBarModel appBarModel) {
+    return AppBar(
+      title: Row(
+        children: [
+          if (appBarModel.imageSVG != null) ...[
+            Image.asset(
+              appBarModel.imageSVG!,
+              height: 158,
+              width: 37,
+              fit: BoxFit.contain,
+            ),
+          ],
+          TextUtils(
+            text: appBarModel.title ?? '',
+            color: AppColors.colorBlack,
+            availableStyle: StyleEnum.MbTitle1Bold,
+          ),
+        ],
+      ),
+      leading: appBarModel.isBack
+          ? IconButton(
+              icon: const Icon(
+                Icons.arrow_back_ios,
+                color: AppColors.colorBlack,
+              ),
+              onPressed: () {
+                Get.back();
+              },
+            )
+          : null,
+      actions: [if (appBarModel.buttonICon != null) appBarModel.buttonICon!],
+      backgroundColor: AppColors.colorWhite,
+      bottom: PreferredSize(
+        preferredSize: Size.fromHeight(1),
+        child: Container(color: AppColors.colorWhiteGray, height: 1),
       ),
     );
   }

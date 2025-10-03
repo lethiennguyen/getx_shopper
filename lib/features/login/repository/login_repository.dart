@@ -8,7 +8,7 @@ import 'package:getx_curd/features/login/model/token_model.dart';
 class AuthRepository extends BaseRepository {
   AuthRepository(super.controller);
 
-  Future<BaseResponse<ModelToken>?> postUserProviders(
+  Future<BaseResponse<ModelToken>?> postUser(
     LoginRequestModel loginRequest,
   ) async {
     final res = await baseSendRequest(

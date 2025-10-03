@@ -1,5 +1,4 @@
-
-import 'package:getx_curd/core/base/base_reponse/base_response_data.dart';
+import 'package:getx_curd/core/base/base_reponse/product_response_data.dart';
 import 'package:getx_curd/core/base/base_reponse/base_response_list.dart';
 import 'package:getx_curd/core/base/base_request/base_request_model.dart';
 import 'package:getx_curd/core/values/api_url.dart';
@@ -11,8 +10,8 @@ class ListProductRepository extends BaseRepository {
   ListProductRepository(super.controller);
 
   Future<BaseResponseList<ProductData>?> getListProduct(
-      BaseRequestListModel baseRequestListModel
-      ) async {
+    BaseRequestListModel baseRequestListModel,
+  ) async {
     final res = await baseSendRequest(
       ApiUrl.urlListProduct,
       RequestMethod.GET,

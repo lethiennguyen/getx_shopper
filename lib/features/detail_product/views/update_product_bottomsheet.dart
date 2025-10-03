@@ -28,10 +28,11 @@ class ShowUpdate {
       children: [
         _headerDropDown(),
         _imageProduct(controller),
+        SizedBoxCustom.h16,
         _formTextInputName(controller),
         _formTextInputPrice(controller),
         _formTextInputQuantity(controller),
-        _formTextInputCover(controller),
+        SizedBoxCustom.h32,
         _buttonBack(controller),
       ],
     );
@@ -51,23 +52,28 @@ Widget _headerDropDown() {
 }
 
 Widget _imageProduct(DetailAndUpdateProductController controller) {
-  return Container(
-    padding: EdgeInsets.all(6),
-    decoration: BoxDecoration(
-      color: AppColors.colorWhite,
-      border: Border.all(color: AppColors.colorWhiteGray, width: 1),
-    ),
-    height: Get.height * 0.2,
-    child: ClipRRect(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
-      child: Obx(
-        () => Image.network(
-          controller.url.value.isNotEmpty
-              ? controller.url.value
-              : controller.product.value?.cover ?? '',
-          fit: BoxFit.contain,
+  return Center(
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Obx(
+          () => ImagePickerWidget(
+            imageUrl: controller.url.value.isNotEmpty
+                ? controller.url.value
+                : controller.product.value?.cover ?? '',
+          ),
         ),
-      ),
+        SizedBoxCustom.w16,
+        UtilsWidget.buildButton(
+          textColor: AppColors.colorWhite,
+          height: 54,
+          width: 80,
+          text: AppStrings.load,
+          onPressed: () {
+            controller.upImage();
+          },
+        ),
+      ],
     ),
   );
 }
@@ -75,11 +81,8 @@ Widget _imageProduct(DetailAndUpdateProductController controller) {
 Widget _formTextInputName(DetailAndUpdateProductController controller) {
   return UtilsWidget.buildInPut(
     TextInputModel(
-      icon: Icon(
-        Icons.drive_file_rename_outline_sharp,
-        color: AppColors.colorOrange,
-      ),
-      label: FieldEnum.name.lable,
+      icon: Icon(Icons.drive_file_rename_outline_sharp, color: colorIcon),
+      label: FieldEnum.name.label,
       hint: FieldEnum.name.hint,
       controller: controller.nameController,
       focusNode: controller.nameFocus,
@@ -93,12 +96,12 @@ Widget _formTextInputName(DetailAndUpdateProductController controller) {
 Widget _formTextInputPrice(DetailAndUpdateProductController controller) {
   return UtilsWidget.buildInPut(
     TextInputModel(
-      icon: Icon(Icons.monetization_on, color: AppColors.colorOrange),
-      label: FieldEnum.price.lable,
+      icon: Icon(Icons.monetization_on, color: colorIcon),
+      label: FieldEnum.price.label,
       hint: FieldEnum.price.hint,
       controller: controller.priceController,
       focusNode: controller.priceFocus,
-      keyboardType: FieldEnum.price.keyboardType,
+      keyboardType: TextInputType.number,
       validator: FieldEnum.price.validate,
       useDefaultError: true,
     ),
@@ -108,8 +111,8 @@ Widget _formTextInputPrice(DetailAndUpdateProductController controller) {
 Widget _formTextInputQuantity(DetailAndUpdateProductController controller) {
   return UtilsWidget.buildInPut(
     TextInputModel(
-      icon: Icon(Icons.warehouse, color: AppColors.colorOrange),
-      label: FieldEnum.quantity.lable,
+      icon: Icon(Icons.warehouse, color: colorIcon),
+      label: FieldEnum.quantity.label,
       hint: FieldEnum.quantity.hint,
       controller: controller.quantityController,
       focusNode: controller.quantityFocus,
@@ -130,37 +133,13 @@ Widget _buttonBack(DetailAndUpdateProductController controller) {
           'name': controller.nameController.text,
           'price': controller.priceController.text,
           'quantity': controller.quantityController.text,
-          'cover': controller.coverController.text ?? '',
+          'cover': controller.url.value.isNotEmpty
+              ? controller.url.value
+              : controller.product.value?.cover ?? '',
         },
       );
     },
   );
 }
 
-Widget _formTextInputCover(DetailAndUpdateProductController controller) {
-  return Row(
-    children: [
-      Expanded(
-        child: UtilsWidget.buildInPut(
-          TextInputModel(
-            label: FieldEnum.cover.lable,
-            hint: FieldEnum.cover.hint,
-            icon: Icon(Icons.image, color: AppColors.colorOrange),
-            controller: controller.coverController,
-            focusNode: controller.coverFocus,
-            keyboardType: FieldEnum.cover.keyboardType,
-            validator: FieldEnum.cover.validate,
-            useDefaultError: true,
-          ),
-        ),
-      ),
-      SizedBoxCustom.w16,
-      UtilsWidget.buildButton(
-        text: AppStrings.load,
-        onPressed: () {
-          controller.loadImage();
-        },
-      ),
-    ],
-  );
-}
+Color colorIcon = AppColors.colorOrange;

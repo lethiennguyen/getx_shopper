@@ -95,9 +95,7 @@ class LoginController extends BaseGetxController {
         ..tax_code = int.parse(taxCode.text)
         ..user_name = usersName.text
         ..password = passWord.text;
-      final result = await _authRepository.postUserProviders(
-        _loginRequestModel,
-      );
+      final result = await _authRepository.postUser(_loginRequestModel);
       if (result == null) {
         isSubmitting.value = false;
         ShowPopup.showDiaLogNotifyton(

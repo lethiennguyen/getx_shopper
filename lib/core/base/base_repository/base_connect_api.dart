@@ -1,10 +1,7 @@
-
-
 import 'package:dio/dio.dart';
 import 'package:getx_curd/core/values/api_url.dart';
 import 'package:getx_curd/core/values/const.dart';
 import 'package:getx_curd/core/values/key.dart';
-import 'package:getx_curd/features/app/controller/app_controller.dart';
 import 'package:hive/hive.dart';
 
 import '../base_controller/base_controller.dart';
@@ -29,17 +26,18 @@ class BaseConnectAPI {
   }
 
   Future<dynamic> sendRequest(
-      String action,
-      RequestMethod requestMethod, {
-        dynamic jsonMap,
-        String? urlOther,
-        Map<String, String>? headersUrlOther,
-        bool isQueryParametersPost = false,
-        required BaseGetxController controller,
-        BaseOptions? dioOptions,
-        Function(Object error)? functionError,
-        bool isToken = true, // mặc định request nào cũng cần token, login thì set false
-      }) async {
+    String action,
+    RequestMethod requestMethod, {
+    dynamic jsonMap,
+    String? urlOther,
+    Map<String, String>? headersUrlOther,
+    bool isQueryParametersPost = false,
+    required BaseGetxController controller,
+    BaseOptions? dioOptions,
+    Function(Object error)? functionError,
+    bool isToken =
+        true, // mặc định request nào cũng cần token, login thì set false
+  }) async {
     dio.options = dioOptions ?? buildDefaultOptions();
 
     final Response response;
@@ -111,21 +109,16 @@ class BaseConnectAPI {
       if (functionError != null) {
         functionError(e);
       }
-     }
+    }
   }
 
   Future<Map<String, String>> getBaseHeader() async {
     final authBox = await Hive.openBox(HiveBoxNames.auth);
     final String token = authBox.get(HiveKeys.token, defaultValue: '');
     if (token.isNotEmpty) {
-      return {
-        "Content-Type": "application/json",
-        "Authorization": token,
-      };
+      return {"Content-Type": "application/json", "Authorization": token};
     }
 
-    return {
-      "Content-Type": "application/json",
-    };
+    return {"Content-Type": "application/json"};
   }
 }

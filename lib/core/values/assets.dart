@@ -16,6 +16,8 @@ class IconsAssets extends Assets {
   static const String search_normal = "${picture}search-normal.svg";
   static const String trash_can = "${picture}trash_can.svg";
   static const String noImage = '${picture}noImage.jpeg';
+  static const String ImageUrl =
+      'https://res.cloudinary.com/dh5rrukew/image/upload/v1758785397/b170870007dfa419295d949814474ab2_t_itsxj7.jpg';
 }
 
 class Lotteri extends Assets {

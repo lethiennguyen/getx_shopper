@@ -19,11 +19,15 @@ class CartItem extends HiveObject {
   @HiveField(4)
   String cover;
 
+  @HiveField(5)
+  bool? checked;
+
   CartItem({
     required this.id,
     required this.name,
     required this.price,
     required this.quantity,
     required this.cover,
+    required this.checked,
   });
 }

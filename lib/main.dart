@@ -12,7 +12,6 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-
   const MyApp({super.key});
 
   @override
@@ -32,11 +31,9 @@ class MyApp extends StatelessWidget {
           backgroundColor: Colors.white,
         ),
       ),
+      debugShowCheckedModeBanner: false,
       getPages: RouterPage.router,
       initialRoute: AppRouter.routerSplash,
-      // initialBinding: BindingsBuilder(() {
-      //   Get.put<CartController>(CartController(), permanent: true);
-      // }),
     );
   }
 }

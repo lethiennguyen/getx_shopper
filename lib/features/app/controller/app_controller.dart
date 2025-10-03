@@ -7,6 +7,8 @@ import '../../../core/base/base_repository/base_connect_api.dart';
 import '../../../core/values/key.dart';
 import '../../login/controller/login_controller.dart';
 import '../../login/repository/login_repository.dart';
+import '../../shopping_cart/controller/shopping_cart_controller.dart';
+import '../../shopping_cart/model/hive_shopping_cart.dart';
 
 class AppController extends BaseGetxController {
   final RxBool isLoggedIn = false.obs;
@@ -18,16 +20,17 @@ class AppController extends BaseGetxController {
   }
 
   Future<void> _initApp() async {
-
     Get.put(BaseConnectAPI(), permanent: true);
+    Hive.registerAdapter(CartItemAdapter());
 
+    await Hive.openBox(HiveBoxNames.auth);
+    await Hive.openBox<CartItem>(HiveBoxNames.cartbox);
     final authBox = await Hive.openBox(HiveBoxNames.auth);
-    final token = authBox.get(HiveKeys.token, defaultValue: '') ;
+    final token = authBox.get(HiveKeys.token, defaultValue: '');
     await Future.delayed(Duration(milliseconds: 2000));
-    if(token != ''){
+    if (token != '') {
       Get.offAllNamed(AppRouter.routerHome);
-    }
-    else{
+    } else {
       Get.offAllNamed(AppRouter.routerLogin);
     }
   }

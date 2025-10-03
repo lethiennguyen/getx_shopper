@@ -8,16 +8,16 @@ class BaseResponseList<T> {
   final String message;
   final List<T> data;
 
-
-
   factory BaseResponseList.fromJson(
-      Map<String, dynamic> json, {
-        required T Function(dynamic x) func,
-      }) {
+    Map<String, dynamic> json, {
+    required T Function(dynamic x) func,
+  }) {
     return BaseResponseList(
       success: json['success'] ?? false,
       message: json['message'] ?? "",
-      data: json['data'] != null ? List<T>.from(json['data'].map((x) => func(x))) : [],
+      data: json['data'] != null
+          ? List<T>.from(json['data'].map((x) => func(x)))
+          : [],
     );
   }
 

@@ -1,16 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:getx_curd/core/base/base_controller/base_controller.dart';
 import 'package:getx_curd/core/base/base_request/product_request.dart';
-import 'package:getx_curd/core/router/app_router.dart';
-import 'package:getx_curd/core/values/assets.dart';
 import 'package:getx_curd/features/create_product/repository/create_product_repository.dart';
+import 'package:hive/hive.dart';
+import 'package:image_picker/image_picker.dart';
 
+import '../../../core/values/key.dart';
 import '../../../core/values/strings.dart';
 import '../../../utils/show_popup.dart';
 import '../../../utils/utils_widget.dart';
+import '../../image_picker_load/repository/image_picker_repository.dart';
+import '../../image_picker_load/request/image_upload_request.dart';
+import '../../shopping_cart/model/hive_shopping_cart.dart';
 
 class CreateProductController extends BaseGetxController {
   late final CreateProductRepository _createProductRepository =
@@ -21,6 +23,8 @@ class CreateProductController extends BaseGetxController {
   final TextEditingController quantityController = TextEditingController();
   final TextEditingController coverController = TextEditingController();
   final RxString url = ''.obs;
+  late final ImageRepository _repositoryImage = ImageRepository(this);
+  final ImageUploadRequest _requestImage = ImageUploadRequest();
 
   final FocusNode nameFocus = FocusNode();
   final FocusNode priceFocus = FocusNode();
@@ -33,25 +37,33 @@ class CreateProductController extends BaseGetxController {
     url.value = coverController.text;
   }
 
+  Future<void> upImage() async {
+    final upImage = await _repositoryImage.pickImage(ImageSource.gallery);
+    if (upImage == null) return;
+    _requestImage
+      ..imagePath = upImage.path
+      ..uploadPreset = _repositoryImage.uploadPreset;
+
+    final urlImage = await _repositoryImage.uploadToCloudinary(_requestImage);
+    if (urlImage == null) return;
+    url.value = urlImage;
+  }
+
   Future<void> createProduct() async {
     autoValidateMode.value = AutovalidateMode.always;
 
     if (!(formKey.currentState?.validate() ?? false)) {
-      UtilsWidget.showSnackBar(
-        title: AppStrings.title,
-        message: AppStrings.messageValidateCreate,
-      );
       return;
     }
     final name = nameController;
     final price = priceController;
     final quantity = quantityController;
-    final cover = coverController;
+    final cover = url;
     _productRequest
       ..name = name.text
       ..price = int.tryParse(price.text)
       ..quantity = int.tryParse(quantity.text)
-      ..cover = cover.text;
+      ..cover = cover.value;
     final result = await _createProductRepository.postCreateProduct(
       _productRequest,
     );
@@ -64,12 +76,12 @@ class CreateProductController extends BaseGetxController {
       );
       return;
     }
-    if (result.success == true) {
+    if (result.success) {
+      Get.back(result: true);
       UtilsWidget.showSnackBar(
         title: AppStrings.title,
         message: AppStrings.messageUpdate,
       );
-      Get.offAllNamed(AppRouter.routerHome);
       return;
     }
   }
