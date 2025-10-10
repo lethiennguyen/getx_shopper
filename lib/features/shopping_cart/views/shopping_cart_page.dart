@@ -24,7 +24,22 @@ class ShoppingCartPage extends GetView<ShoppingCartController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _appBar(controller),
+      appBar: buildAppBar(
+        titleText: 'Thông tin chi tiết sản phẩm',
+        onTap: () {
+          Get.back(result: true);
+        },
+        title: TextUtils(text: 'Giỏ hàng'),
+        actions: [
+          IconButton(
+            onPressed: () {
+              controller.removeSelected();
+            },
+            icon: Icon(Icons.delete, color: AppColors.colorOrange),
+          ),
+          SizedBox(width: 8),
+        ],
+      ),
       body: _buildShoppingCart(controller),
       bottomNavigationBar: _bottomNavigatorBar(controller),
       backgroundColor: AppColors.colorWhite,

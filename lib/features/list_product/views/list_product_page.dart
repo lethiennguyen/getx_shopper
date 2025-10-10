@@ -32,7 +32,29 @@ class ListProductPage extends GetView<ListProductController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.colorWhite,
-      appBar: _appBar(controller),
+      appBar: buildAppBar(
+        titleText: 'Thông tin chi tiết sản phẩm',
+        title: SvgPicture.asset(IconsAssets.logo, width: 158, height: 37),
+        centerTitle: false,
+        showIcon: false,
+        onTap: () {
+          Get.back(result: true);
+        },
+        actions: [
+          Obx(
+            () => UtilsWidget.buildIconShoppingCart(
+              onPressed: () async {
+                HapticFeedback.lightImpact();
+                final result = await Get.toNamed(AppRouter.routerShopping_cart);
+                if (result == true) {
+                  controller.shoppingCartCount();
+                }
+              },
+              numberItem: controller.cartCount.toString(),
+            ),
+          ),
+        ],
+      ),
       body: _buildListProduct(controller),
       floatingActionButton: _buildFloatingActionButton(controller.onRefresh),
     );

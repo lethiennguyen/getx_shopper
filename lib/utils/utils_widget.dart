@@ -15,6 +15,64 @@ import 'package:pull_to_refresh_flutter3/pull_to_refresh_flutter3.dart';
 import '../core/values/assets.dart';
 import '../core/values/dimens.dart';
 
+PreferredSizeWidget buildAppBar({
+  bool showActions = true,
+  bool showIcon = true,
+  IconData? icon = Icons.arrow_back_ios,
+  Color? iconColor,
+  Function? onTap,
+  bool? centerTitle,
+  required String titleText,
+  Widget? title,
+  List<Widget>? actions,
+  Widget? flexibleSpace,
+}) {
+  return AppBar(
+    backgroundColor: Colors.white,
+    leading: (showIcon && icon != null)
+        ? IconButton(
+            icon: Icon(icon, color: iconColor ?? AppColors.colorBlack),
+            onPressed: onTap != null ? () => onTap() : () => Get.back(),
+            iconSize: 24,
+          )
+        : null,
+    centerTitle: centerTitle ?? true,
+    title: title ?? const SizedBox(),
+    actions: actions,
+    bottom: PreferredSize(
+      preferredSize: Size.fromHeight(1),
+      child: Container(color: AppColors.colorWhiteGray, height: 1),
+    ),
+    // flexibleSpace:
+    //     flexibleSpace ??
+    //     Stack(
+    //       children: [
+    //         Container(
+    //           height: 112.0,
+    //           decoration: const BoxDecoration(
+    //             image: DecorationImage(
+    //               image: AssetImage(Assets.ASSETS_IMAGES_BG_APPBAR_PNG),
+    //               fit: BoxFit.cover,
+    //             ),
+    //           ),
+    //         ),
+    //         Positioned(
+    //           bottom: 20,
+    //           left: 0,
+    //           right: 0,
+    //           child: Center(
+    //             child: TextUtils(
+    //               text: titleText,
+    //               color: AppColors.colorWhite,
+    //               availableStyle: StyleEnum.MbTitle1Bold,
+    //             ),
+    //           ),
+    //         ),
+    //       ],
+    //     ),
+  );
+}
+
 class UtilsWidget {
   static const String appName = "My Flutter App";
   static DateTime? _dateTime;
@@ -393,7 +451,7 @@ class UtilsWidget {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
-                      color: AppColors.colorGray.withOpacity(0.3),
+                      color: AppColors.colorGray.withValues(alpha: 0.3),
                       width: 1,
                     ),
                   ),
@@ -401,65 +459,65 @@ class UtilsWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       _buttonIcon(shoppingCartModel.onReduce, Icons.remove),
-                      // Container(
-                      //   width: 25,
-                      //   height: 20,
-                      //   decoration: BoxDecoration(
-                      //     border: Border(
-                      //       left: BorderSide(
-                      //         color: AppColors.colorGray,
-                      //         width: 1,
-                      //       ),
-                      //       right: BorderSide(
-                      //         color: AppColors.colorGray,
-                      //         width: 1,
-                      //       ),
-                      //     ),
-                      //   ),
-                      //   child: Center(
-                      //     child: TextUtils(
-                      //       text: (shoppingCartModel.quantity ?? 0).toString(),
-                      //       size: AppDimens.sizeTextMediumTb,
-                      //       fontWeight: FontWeight.w700,
-                      //       color: AppColors.colorGray,
-                      //     ),
-                      //   ),
-                      // ),
                       Container(
-                        width: 40,
-                        height: 28,
+                        width: 25,
+                        height: 20,
                         decoration: BoxDecoration(
-                          border: Border.all(
-                            color: AppColors.colorGray,
-                            width: 1,
+                          border: Border(
+                            left: BorderSide(
+                              color: AppColors.colorGray,
+                              width: 1,
+                            ),
+                            right: BorderSide(
+                              color: AppColors.colorGray,
+                              width: 1,
+                            ),
                           ),
                         ),
                         child: Center(
-                          child: TextField(
-                            controller: TextEditingController(
-                              text: (shoppingCartModel.quantity ?? 0)
-                                  .toString(),
-                            ),
-                            keyboardType: TextInputType.number,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: AppDimens.sizeTextMediumTb,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.colorGray,
-                            ),
-                            decoration: const InputDecoration(
-                              border: InputBorder.none,
-                              isDense: true, // giảm padding
-                              contentPadding: EdgeInsets.zero,
-                            ),
-                            onSubmitted: (value) {
-                              final qty = int.tryParse(value) ?? 1;
-                              shoppingCartModel.quantity = qty;
-                              // gọi controller.update hoặc cart.sum() nếu cần tính lại
-                            },
+                          child: TextUtils(
+                            text: (shoppingCartModel.quantity ?? 0).toString(),
+                            size: AppDimens.sizeTextMediumTb,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.colorGray,
                           ),
                         ),
                       ),
+                      // Container(
+                      //   width: 40,
+                      //   height: 28,
+                      //   decoration: BoxDecoration(
+                      //     border: Border.all(
+                      //       color: AppColors.colorGray,
+                      //       width: 1,
+                      //     ),
+                      //   ),
+                      //   child: Center(
+                      //     child: TextField(
+                      //       controller: TextEditingController(
+                      //         text: (shoppingCartModel.quantity ?? 0)
+                      //             .toString(),
+                      //       ),
+                      //       keyboardType: TextInputType.number,
+                      //       textAlign: TextAlign.center,
+                      //       style: TextStyle(
+                      //         fontSize: AppDimens.sizeTextMediumTb,
+                      //         fontWeight: FontWeight.w700,
+                      //         color: AppColors.colorGray,
+                      //       ),
+                      //       decoration: const InputDecoration(
+                      //         border: InputBorder.none,
+                      //         isDense: true, // giảm padding
+                      //         contentPadding: EdgeInsets.zero,
+                      //       ),
+                      //       onSubmitted: (value) {
+                      //         final qty = int.tryParse(value) ?? 1;
+                      //         shoppingCartModel.quantity = qty;
+                      //         // gọi controller.update hoặc cart.sum() nếu cần tính lại
+                      //       },
+                      //     ),
+                      //   ),
+                      // ),
                       _buttonIcon(shoppingCartModel.onIncrease, Icons.add),
                     ],
                   ),

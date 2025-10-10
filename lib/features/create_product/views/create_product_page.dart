@@ -24,7 +24,13 @@ class CreateProductPage extends GetView<CreateProductController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.colorWhite,
-      appBar: AppBar(backgroundColor: AppColors.colorWhite),
+      appBar: buildAppBar(
+        titleText: 'Tạo sản phẩm',
+        title: TextUtils(
+          text: 'Tạo sản phẩm',
+          size: AppDimens.sizeTextMediumTb,
+        ),
+      ),
       body: _buildBody(controller),
       bottomNavigationBar: _buttonBack(controller),
     );

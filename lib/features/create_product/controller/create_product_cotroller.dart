@@ -3,16 +3,12 @@ import 'package:get/get.dart';
 import 'package:getx_curd/core/base/base_controller/base_controller.dart';
 import 'package:getx_curd/core/base/base_request/product_request.dart';
 import 'package:getx_curd/features/create_product/repository/create_product_repository.dart';
-import 'package:hive/hive.dart';
 import 'package:image_picker/image_picker.dart';
-
-import '../../../core/values/key.dart';
 import '../../../core/values/strings.dart';
 import '../../../utils/show_popup.dart';
 import '../../../utils/utils_widget.dart';
 import '../../image_picker_load/repository/image_picker_repository.dart';
 import '../../image_picker_load/request/image_upload_request.dart';
-import '../../shopping_cart/model/hive_shopping_cart.dart';
 
 class CreateProductController extends BaseGetxController {
   late final CreateProductRepository _createProductRepository =

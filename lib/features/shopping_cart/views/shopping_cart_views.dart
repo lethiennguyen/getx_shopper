@@ -157,35 +157,35 @@ Widget _bottomNavigatorBar(ShoppingCartController controller) {
   );
 }
 
-PreferredSizeWidget _appBar(ShoppingCartController controller) {
-  return AppBar(
-    leading: IconButton(
-      onPressed: () {
-        if (controller.deletedSomething.value) {
-          Get.back(result: true);
-        } else {
-          Get.back();
-        }
-      },
-      icon: Icon(Icons.arrow_back_ios_new),
-    ),
-    backgroundColor: Colors.white,
-    title: TextUtils(
-      text: AppStrings.cart,
-      availableStyle: StyleEnum.MbTitle1Bold,
-    ),
-    bottom: PreferredSize(
-      preferredSize: Size.fromHeight(1),
-      child: Container(color: Colors.black26, height: 0.5),
-    ),
-    actions: [
-      IconButton(
-        onPressed: () {
-          controller.removeSelected();
-        },
-        icon: Icon(Icons.delete, color: AppColors.colorOrange),
-      ),
-      SizedBox(width: 8),
-    ],
-  );
-}
+// PreferredSizeWidget _appBar(ShoppingCartController controller) {
+//   return AppBar(
+//     leading: IconButton(
+//       onPressed: () {
+//         if (controller.deletedSomething.value) {
+//           Get.back(result: true);
+//         } else {
+//           Get.back();
+//         }
+//       },
+//       icon: Icon(Icons.arrow_back_ios_new),
+//     ),
+//     backgroundColor: Colors.white,
+//     title: TextUtils(
+//       text: AppStrings.cart,
+//       availableStyle: StyleEnum.MbTitle1Bold,
+//     ),
+//     bottom: PreferredSize(
+//       preferredSize: Size.fromHeight(1),
+//       child: Container(color: Colors.black26, height: 0.5),
+//     ),
+//     actions: [
+//       IconButton(
+//         onPressed: () {
+//           controller.removeSelected();
+//         },
+//         icon: Icon(Icons.delete, color: AppColors.colorOrange),
+//       ),
+//       SizedBox(width: 8),
+//     ],
+//   );
+// }

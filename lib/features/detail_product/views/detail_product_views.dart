@@ -1,34 +1,34 @@
 part of 'detail_product_page.dart';
 
-PreferredSizeWidget _appBar(DetailAndUpdateProductController controller) {
-  return AppBar(
-    backgroundColor: AppColors.colorWhite,
-    leading: IconButton(
-      onPressed: () {
-        Get.back(result: true);
-      },
-      icon: Icon(Icons.arrow_back),
-    ),
-    actions: [
-      Obx(
-        () => UtilsWidget.buildIconShoppingCart(
-          onPressed: () async {
-            HapticFeedback.lightImpact();
-            final result = await Get.toNamed(AppRouter.routerShopping_cart);
-            if (result == true) {
-              controller.shoppingCartCount();
-            }
-          },
-          numberItem: controller.cartCount.toString(),
-        ),
-      ),
-    ],
-    bottom: PreferredSize(
-      preferredSize: Size.fromHeight(1),
-      child: Container(color: AppColors.colorWhiteGray, height: 1),
-    ),
-  );
-}
+// PreferredSizeWidget _appBar(DetailAndUpdateProductController controller) {
+//   return AppBar(
+//     backgroundColor: AppColors.colorWhite,
+//     leading: IconButton(
+//       onPressed: () {
+//         Get.back(result: true);
+//       },
+//       icon: Icon(Icons.arrow_back),
+//     ),
+//     actions: [
+//       Obx(
+//         () => UtilsWidget.buildIconShoppingCart(
+//           onPressed: () async {
+//             HapticFeedback.lightImpact();
+//             final result = await Get.toNamed(AppRouter.routerShopping_cart);
+//             if (result == true) {
+//               controller.shoppingCartCount();
+//             }
+//           },
+//           numberItem: controller.cartCount.toString(),
+//         ),
+//       ),
+//     ],
+//     bottom: PreferredSize(
+//       preferredSize: Size.fromHeight(1),
+//       child: Container(color: AppColors.colorWhiteGray, height: 1),
+//     ),
+//   );
+// }
 
 Widget _bodyFormProduct(DetailAndUpdateProductController controller) {
   return Container(
@@ -74,7 +74,7 @@ Widget _buildImage(DetailAndUpdateProductController controller) {
                 ),
               ),
             )
-          : Image.network(cover ?? IconsAssets.ImageUrl, fit: BoxFit.contain),
+          : Image.network(cover, fit: BoxFit.contain),
     ),
   );
 }

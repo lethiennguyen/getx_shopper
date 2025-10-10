@@ -98,7 +98,7 @@ Widget _productItem(ProductData product, ListProductController controller) {
         color: Colors.transparent,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.15),
             blurRadius: 12,
             offset: const Offset(0, 4),
             spreadRadius: 0,
@@ -108,8 +108,8 @@ Widget _productItem(ProductData product, ListProductController controller) {
       child: Material(
         color: Colors.white,
         child: InkWell(
-          splashColor: Colors.grey.withOpacity(0.2),
-          highlightColor: Colors.grey.withOpacity(0.1),
+          splashColor: Colors.grey.withValues(alpha: 0.1),
+          highlightColor: Colors.grey.withValues(alpha: 0.1),
           onTap: () async {
             await Future.delayed(const Duration(milliseconds: 100));
             final result = await Get.toNamed(
@@ -226,7 +226,6 @@ PreferredSizeWidget _appBar(ListProductController controller) {
             Obx(
               () => UtilsWidget.buildIconShoppingCart(
                 onPressed: () async {
-                  HapticFeedback.lightImpact();
                   final result = await Get.toNamed(
                     AppRouter.routerShopping_cart,
                   );

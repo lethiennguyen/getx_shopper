@@ -51,7 +51,7 @@ class ShoppingCartController extends BaseGetxController {
   void sum() {
     sumItem.value = 0;
     for (var item in items) {
-      if (checkAll.value) {
+      if (item.checked == true) {
         sumItem.value += item.price * item.quantity;
       }
     }
@@ -70,7 +70,7 @@ class ShoppingCartController extends BaseGetxController {
         item.quantity--;
       }
     }
-    box.put(key, item); // cập nhật lại Hive
+    box.put(key, item);
     sum();
   }
 
