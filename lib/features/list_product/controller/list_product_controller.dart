@@ -57,6 +57,7 @@ class ListProductController extends BaseRefreshGetxController {
     final request = BaseRequestListModel(page: pageIndex, pageSize: 10);
     final result = await _listProduct.getListProduct(request);
     if (result == null) {
+      listProduct.clear();
       ShowPopup.showDiaLogNotifyton(
         AppStrings.title,
         AppStrings.messageErrorRequest,
